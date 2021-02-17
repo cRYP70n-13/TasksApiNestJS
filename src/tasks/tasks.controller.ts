@@ -14,7 +14,7 @@ export class TasksController {
 	* @returns {Task[]} The tasks array stored in our memory
 	*/
 	@Get()
-	getTasks(@Query() filterDto: GetTasksFilterDto): Task[] {
+	getTasks(@Query(ValidationPipe) filterDto: GetTasksFilterDto): Task[] {
 		if (Object.keys(filterDto).length) {
 			return this.tasksService.getTasksWithFilter(filterDto);
 		} else {
