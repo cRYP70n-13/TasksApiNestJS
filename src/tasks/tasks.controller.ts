@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UsePipes, ValidationPipe } from '@nestjs/common';
 import { Task, TasksStatus } from './task.model';
 import { TasksService } from './tasks.service';
 import { CreateTaskDto } from './dto/create-task-dto';
@@ -8,6 +8,10 @@ import { GetTasksFilterDto } from './dto/get-tasks-filter-dto';
 export class TasksController {
 	constructor(private tasksService: TasksService) {}
 
+	/**
+	* @param {FilterDto} FilterDto for the tasks
+	* @returns {Task[]} The tasks array stored in our memory
+	*/
 	@Get()
 	getTasks(@Query() filterDto: GetTasksFilterDto): Task[] {
 		if (Object.keys(filterDto).length) {
@@ -15,19 +19,31 @@ export class TasksController {
 		} else {
 			return this.tasksService.getAllTasks();
 		}
-		return this.tasksService.getAllTasks();
 	}
 
+	/**
+	* @param {Id} The task id
+	* @returns {Task} The task that have the exact ID
+	*/
 	@Get('/:id')
 	getTaskById(@Param('id') id: string): Task {
 		return this.tasksService.getTaskById(id);
 	}
 
+	/**
+	* @param {*}
+	* @returns {Task} The created task
+	*/
 	@Post()
+	@UsePipes(ValidationPipe)
 	createTask(@Body() createTaskDto: CreateTaskDto): Task {
 		return this.tasksService.createTask(createTaskDto);
 	}
 
+	/**
+	* @param {:id/status}
+	* @returns {Task} The updated task
+	*/
 	@Patch('/:id/status')
 	upadteTask(
 		@Param('id') id: string,
@@ -36,8 +52,12 @@ export class TasksController {
 		return this.tasksService.updateTaskStatus(id, status);
 	}
 
+	/**
+	* @param {:id/status}
+	* @returns {Task} The deleted task
+	*/
 	@Delete('/:id')
-	deleteTaskById(@Param('id') id: string) {
+	deleteTaskById(@Param('id') id: string): any {
 		return this.tasksService.deleteTaskById(id);
 	}
 }
